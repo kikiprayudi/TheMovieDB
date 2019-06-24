@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/main_navigation.xml" app:startDestination="@id/genreListFragment">
 
     <fragment android:id="@+id/genreListFragment" android:name="kiki.prayudi.themoviedb.ui.genrelist.GenreListFragment"
-              android:label="GenreListFragment">
+              android:label="GenreListFragment" tools:layout="@layout/item_genre_list">
         <action android:id="@+id/action_genreListFragment_to_movieListFragment" app:destination="@id/movieListFragment"
                 app:popUpTo="@id/genreListFragment" app:popUpToInclusive="true"/>
     </fragment>
     <fragment android:id="@+id/movieListFragment" android:name="kiki.prayudi.themoviedb.ui.movielist.MovieListFragment"
-              android:label="MovieListFragment">
+              android:label="MovieListFragment" tools:layout="@layout/item_genre_list">
         <action android:id="@+id/action_movieListFragment_to_movieDetailFragment"
                 app:destination="@id/movieDetailFragment" app:popUpTo="@id/movieListFragment"
                 app:popUpToInclusive="true"/>
     </fragment>
     <fragment android:id="@+id/movieDetailFragment"
               android:name="kiki.prayudi.themoviedb.ui.moviedetail.MovieDetailFragment"
-              android:label="MovieDetailFragment"/>
+              android:label="MovieDetailFragment" tools:layout="@layout/fragment_movie_detail"/>
 </navigation>
