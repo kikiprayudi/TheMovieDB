@@ -1,0 +1,61 @@
+package kiki.prayudi.themoviedb.ui.genrelist
+
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kiki.prayudi.themoviedb.R
+import kiki.prayudi.themoviedb.api.ApiResponse
+import kiki.prayudi.themoviedb.data.genre.GenreList
+import kiki.prayudi.themoviedb.ui.base.BaseFragment
+import kotlinx.android.synthetic.main.fragment_genre_list.*
+import kotlinx.android.synthetic.main.layout_error.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
+
+class GenreListFragment : BaseFragment(), GenreListViewModel.GenreListListener {
+
+    private var adapter: GenreListAdapter? = null
+    private val viewModel: GenreListViewModel by viewModel()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_genre_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.attachViewModel(this, this)
+
+        viewModel.getGenreList()
+
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.getGenreList()
+        }
+    }
+
+    override fun onFailure(message: String) {
+        viewAnimator.displayedChild = VIEW_ERROR
+        swipeRefreshLayout.isRefreshing = false
+        tvError.text = message
+    }
+
+    override fun onError(error: ApiResponse) {
+        viewAnimator.displayedChild = VIEW_ERROR
+        swipeRefreshLayout.isRefreshing = false
+        tvError.text = error.statusMessage
+    }
+
+    override fun onSuccessGetGenreList(data: GenreList) {
+        viewAnimator.displayedChild = VIEW_SUCCESS
+        swipeRefreshLayout.isRefreshing = false
+        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        recyclerView.addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
+        adapter = data.genres?.toMutableList()?.let { GenreListAdapter(it) }
+        recyclerView.adapter = adapter
+    }
+}
