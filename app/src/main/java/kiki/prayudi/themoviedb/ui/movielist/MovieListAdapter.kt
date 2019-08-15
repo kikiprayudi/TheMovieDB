@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kiki.prayudi.themoviedb.Constant
 import kiki.prayudi.themoviedb.R
 import kiki.prayudi.themoviedb.data.movie.Movie
+import kiki.prayudi.themoviedb.util.Utils.setImageURI
 import kotlinx.android.synthetic.main.item_movie_list.view.*
 
 class MovieListAdapter(data: MutableList<Movie>) : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {

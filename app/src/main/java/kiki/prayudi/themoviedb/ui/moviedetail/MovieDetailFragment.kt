@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kiki.prayudi.themoviedb.Constant
 import kiki.prayudi.themoviedb.R
 import kiki.prayudi.themoviedb.api.ApiResponse
@@ -16,6 +14,7 @@ import kiki.prayudi.themoviedb.data.review.ReviewList
 import kiki.prayudi.themoviedb.data.trailer.TrailerList
 import kiki.prayudi.themoviedb.data.trailer.Youtube
 import kiki.prayudi.themoviedb.ui.base.BaseFragment
+import kiki.prayudi.themoviedb.util.Utils.setImageURI
 import kotlinx.android.synthetic.main.fragment_movie_detail.*
 import kotlinx.android.synthetic.main.layout_error.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,6 +36,18 @@ class MovieDetailFragment : BaseFragment(), MovieDetailViewModel.MovieDetailList
         if (viewModel.id.value == null) {
             viewModel.id.value = arguments?.getInt("id")
         }
+
+        adapter = YoutubeListAdapter(mutableListOf(), object : YoutubeListAdapter.Listener {
+            override fun onItemClick(itemData: Youtube) {
+                activity?.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(Constant.YOUTUBR_URL + itemData.source)
+                    )
+                )
+            }
+        })
+        recyclerView.adapter = adapter
 
         viewModel.id.value?.let {
             viewModel.getMovieById(it)
@@ -81,19 +92,9 @@ class MovieDetailFragment : BaseFragment(), MovieDetailViewModel.MovieDetailList
     override fun onSuccessGetTrailerListMovieById(data: TrailerList) {
         viewAnimator.displayedChild = VIEW_SUCCESS
         swipeRefreshLayout.isRefreshing = false
-        adapter = data.youtube?.toMutableList()?.let {
-            YoutubeListAdapter(it, object : YoutubeListAdapter.Listener {
-                override fun onItemClick(itemData: Youtube) {
-                    activity?.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(Constant.YOUTUBR_URL + itemData.source)
-                        )
-                    )
-                }
-            })
+        data.youtube?.toMutableList()?.let {
+            adapter?.data = it
+            adapter?.notifyDataSetChanged()
         }
-        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-        recyclerView.adapter = adapter
     }
 }

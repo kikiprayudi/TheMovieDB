@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kiki.prayudi.themoviedb.R
 import kiki.prayudi.themoviedb.api.ApiResponse
@@ -31,11 +30,19 @@ class GenreListFragment : BaseFragment(), GenreListViewModel.GenreListListener {
 
         viewModel.attachViewModel(this, this)
 
+        adapter = GenreListAdapter(mutableListOf())
+        recyclerView.addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
+        recyclerView.adapter = adapter
+
         viewModel.getGenreList()
 
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.getGenreList()
         }
+    }
+
+    override fun onBackPressed() {
+        showToast("Press Back")
     }
 
     override fun onFailure(message: String) {
@@ -53,9 +60,9 @@ class GenreListFragment : BaseFragment(), GenreListViewModel.GenreListListener {
     override fun onSuccessGetGenreList(data: GenreList) {
         viewAnimator.displayedChild = VIEW_SUCCESS
         swipeRefreshLayout.isRefreshing = false
-        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        recyclerView.addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
-        adapter = data.genres?.toMutableList()?.let { GenreListAdapter(it) }
-        recyclerView.adapter = adapter
+        data.genres?.toMutableList()?.let {
+            adapter?.data = it
+            adapter?.notifyDataSetChanged()
+        }
     }
 }

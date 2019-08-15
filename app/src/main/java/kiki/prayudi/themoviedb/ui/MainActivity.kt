@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
             R.id.movieListFragment,
             R.id.movieDetailFragment -> {
                 navController.popBackStack()
-//                navController.navigate(R.id.genreListFragment)
             }
             else -> {
                 super.onBackPressed()

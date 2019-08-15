@@ -1,5 +1,7 @@
 package kiki.prayudi.themoviedb.api
 
+import com.ashokvarma.gander.GanderInterceptor
+import kiki.prayudi.themoviedb.App
 import kiki.prayudi.themoviedb.Constant
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -22,6 +24,10 @@ object RetrofitFactory {
         okHttpBuild.readTimeout(1, TimeUnit.MINUTES)
         okHttpBuild.writeTimeout(1, TimeUnit.MINUTES)
         okHttpBuild.addInterceptor(ApiInterceptor())
+        okHttpBuild.addInterceptor(
+            GanderInterceptor(App.context)
+                .showNotification(true)
+        )
         return okHttpBuild.build()
     }
 }

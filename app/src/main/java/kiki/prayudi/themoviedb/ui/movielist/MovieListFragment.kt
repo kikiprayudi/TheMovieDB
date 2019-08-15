@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kiki.prayudi.themoviedb.R
 import kiki.prayudi.themoviedb.api.ApiResponse
@@ -34,8 +33,12 @@ class MovieListFragment : BaseFragment(), MovieListViewModel.MovieListListener {
         if (viewModel.id.value == null) {
             viewModel.id.value = arguments?.getInt("id")
         }
-        viewModel.id.value?.let { viewModel.getMovieList(it) }
 
+        recyclerView.addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
+        adapter = MovieListAdapter(mutableListOf())
+        recyclerView.adapter = adapter
+
+        viewModel.id.value?.let { viewModel.getMovieList(it) }
 
         swipeRefreshLayout.setOnRefreshListener {
             viewModel.id.value?.let { viewModel.getMovieList(it) }
@@ -57,9 +60,11 @@ class MovieListFragment : BaseFragment(), MovieListViewModel.MovieListListener {
     override fun onSuccessGetMovieList(data: MovieList) {
         viewAnimator.displayedChild = VIEW_SUCCESS
         swipeRefreshLayout.isRefreshing = false
-        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        recyclerView.addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
-        adapter = data.results?.toMutableList()?.let { MovieListAdapter(it) }
-        recyclerView.adapter = adapter
+
+        data.results?.toMutableList()?.let {
+            adapter?.data = it
+            adapter?.notifyDataSetChanged()
+        }
+
     }
 }
