@@ -3,15 +3,18 @@ apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+final buildDate = new Date().format("yyyyMMddHHmm")
+
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.0"
     defaultConfig {
         applicationId "kiki.prayudi.themoviedb"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        multiDexEnabled true
+        versionCode buildDate.toBigInteger()
+        versionName buildDate
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -19,6 +22,28 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
+    }
+    flavorDimensions "main"
+    productFlavors {
+        development {
+            dimension "main"
+            buildConfigField "String", "API_URL", '"https://api.themoviedb.org/3/"'
+            buildConfigField "String", "MEDIA_URL", '"http://image.tmdb.org/t/p/w185/"'
+        }
+        production {
+            dimension "main"
+            buildConfigField "String", "API_URL", '"https://api.themoviedb.org/3/"'
+            buildConfigField "String", "MEDIA_URL", '"http://image.tmdb.org/t/p/w185/"'
+        }
+    }
+    applicationVariants.all {
+        variant -> variant.outputs.all {
+            output -> outputFileName = "TheMovieDB_${variant.name}_${variant.versionName}.apk"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -31,10 +56,13 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
 
     // AndroidX
-    implementation "androidx.core:core-ktx:$appcompat_version"
+    implementation "androidx.core:core-ktx:$ktx_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.annotation:annotation:$appcompat_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+
+    // Multidex
+    implementation "com.android.support:multidex:$appcompat_version"
 
     // Kotlin
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlincoroutine_version"
@@ -46,6 +74,7 @@ dependencies {
     implementation "org.koin:koin-androidx-scope:$koin_version"                         // Scope feature (experimental)
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
+    // Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     // Optional : Kotlin extension (https://d.android.com/kotlin/ktx)
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -73,4 +102,25 @@ dependencies {
     // Gander
     debugImplementation "com.ashokvarma.android:gander-persistence:$gander_version"
     releaseImplementation "com.ashokvarma.android:gander-no-op:$gander_version"
+
+    // JWT
+    implementation "io.jsonwebtoken:jjwt:$jjwt_version"
+
+    // Hawk Shared Pref
+    implementation "com.orhanobut:hawk:$hawk_version"
+
+    // ExpandableLayout
+    implementation "net.cachapa.expandablelayout:expandablelayout:$expandablelayout_version"
+
+    // Dexter Permission
+    implementation "com.karumi:dexter:$dexter_version"
+
+    // EasyImage Picker
+    implementation "com.github.jkwiecien:EasyImage:$easyimage_version"
+
+    // Image Compressor
+    implementation "id.zelory:compressor:$zalorycompressor_version"
+
+    // Joda time
+    implementation "joda-time:joda-time:$jodatime_version"
 }
